@@ -1086,10 +1086,84 @@
     function load() {
       var raw;
       try { raw = localStorage.getItem(STORAGE_KEY); } catch (e) { raw = null; }
+      if (raw === null) {
+        var seeded = sampleTasks();
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(seeded)); } catch (e) {}
+        return seeded.map(normalizeTask);
+      }
       var parsed;
       try { parsed = raw ? JSON.parse(raw) : []; } catch (e) { parsed = []; }
       if (!Array.isArray(parsed)) parsed = [];
       return parsed.map(normalizeTask);
+    }
+
+    function isoOffset(days) {
+      var d = new Date();
+      d.setDate(d.getDate() + days);
+      var m = String(d.getMonth() + 1).padStart(2, "0");
+      var day = String(d.getDate()).padStart(2, "0");
+      return d.getFullYear() + "-" + m + "-" + day;
+    }
+
+    function sampleTasks() {
+      return [
+        {
+          id: makeId(),
+          text: "新規クライアントのヒアリング資料を作成",
+          status: "notstarted",
+          priority: "high",
+          startDate: isoOffset(0),
+          dueDate: isoOffset(3),
+          tags: ["仕事"],
+          subtasks: [
+            { id: makeId(), text: "要件をまとめる", done: false },
+            { id: makeId(), text: "見積り項目を洗い出す", done: false }
+          ]
+        },
+        {
+          id: makeId(),
+          text: "ECサイトの請求書を発行",
+          status: "inprogress",
+          priority: "mid",
+          startDate: isoOffset(-2),
+          dueDate: isoOffset(1),
+          tags: ["仕事", "経理"],
+          subtasks: []
+        },
+        {
+          id: makeId(),
+          text: "月次レポートを送付",
+          status: "notstarted",
+          priority: "mid",
+          startDate: "",
+          dueDate: isoOffset(-2),
+          tags: ["仕事"],
+          subtasks: []
+        },
+        {
+          id: makeId(),
+          text: "ジムの予約を確認",
+          status: "inprogress",
+          priority: "low",
+          startDate: "",
+          dueDate: "",
+          tags: ["プライベート"],
+          subtasks: []
+        },
+        {
+          id: makeId(),
+          text: "サイトリニューアルのデザインレビュー",
+          status: "done",
+          priority: "high",
+          startDate: isoOffset(-7),
+          dueDate: isoOffset(-1),
+          tags: ["仕事", "デザイン"],
+          subtasks: [
+            { id: makeId(), text: "トップページ確認", done: true },
+            { id: makeId(), text: "商品ページ確認", done: true }
+          ]
+        }
+      ];
     }
 
     function normalizeTask(t) {
