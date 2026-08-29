@@ -1,0 +1,1486 @@
+<title>ToDo管理</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Mono:wght@500&family=Zen+Maru+Gothic:wght@700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,300..600,0..1,-50..200&display=swap">
+<style>
+  :root {
+    --bg: #f8f9fa;
+    --surface: #ffffff;
+    --surface-hover: #f1f3f4;
+    --border: #dadce0;
+    --border-strong: #c4c7c5;
+    --text: #202124;
+    --text-secondary: #5f6368;
+    --text-faint: #80868b;
+
+    --blue: #1a73e8;
+    --blue-hover: #1765cc;
+    --blue-soft: rgba(26, 115, 232, 0.08);
+    --blue-soft-strong: rgba(26, 115, 232, 0.16);
+    --blue-ink: #ffffff;
+
+    --red: #d93025;
+    --red-soft: rgba(217, 48, 37, 0.08);
+    --red-soft-strong: rgba(217, 48, 37, 0.14);
+
+    --amber: #975500;
+    --amber-fill: #f9ab00;
+    --amber-soft: rgba(249, 171, 0, 0.14);
+
+    --green: #188038;
+    --green-fill: #34a853;
+    --green-soft: rgba(52, 168, 83, 0.12);
+
+    --shadow-1: 0 1px 2px rgba(60, 64, 67, 0.08), 0 1px 3px rgba(60, 64, 67, 0.10);
+    --shadow-2: 0 2px 6px rgba(60, 64, 67, 0.12), 0 4px 12px rgba(60, 64, 67, 0.10);
+
+    --font-body: "Roboto", "Hiragino Kaku Gothic ProN", "Yu Gothic", Arial, sans-serif;
+    --font-mono: "Roboto Mono", ui-monospace, "SF Mono", monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #202124;
+      --surface: #292a2d;
+      --surface-hover: #35363a;
+      --border: #3c4043;
+      --border-strong: #5f6368;
+      --text: #e8eaed;
+      --text-secondary: #9aa0a6;
+      --text-faint: #80868b;
+
+      --blue: #8ab4f8;
+      --blue-hover: #aecbfa;
+      --blue-soft: rgba(138, 180, 248, 0.16);
+      --blue-soft-strong: rgba(138, 180, 248, 0.26);
+      --blue-ink: #14181f;
+
+      --red: #f28b82;
+      --red-soft: rgba(242, 139, 130, 0.16);
+      --red-soft-strong: rgba(242, 139, 130, 0.26);
+
+      --amber: #fdd663;
+      --amber-fill: #fdd663;
+      --amber-soft: rgba(253, 214, 99, 0.18);
+
+      --green: #81c995;
+      --green-fill: #81c995;
+      --green-soft: rgba(129, 201, 149, 0.16);
+
+      --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.35), 0 1px 3px rgba(0, 0, 0, 0.3);
+      --shadow-2: 0 2px 6px rgba(0, 0, 0, 0.4), 0 6px 16px rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --bg: #202124;
+    --surface: #292a2d;
+    --surface-hover: #35363a;
+    --border: #3c4043;
+    --border-strong: #5f6368;
+    --text: #e8eaed;
+    --text-secondary: #9aa0a6;
+    --text-faint: #80868b;
+
+    --blue: #8ab4f8;
+    --blue-hover: #aecbfa;
+    --blue-soft: rgba(138, 180, 248, 0.16);
+    --blue-soft-strong: rgba(138, 180, 248, 0.26);
+    --blue-ink: #14181f;
+
+    --red: #f28b82;
+    --red-soft: rgba(242, 139, 130, 0.16);
+    --red-soft-strong: rgba(242, 139, 130, 0.26);
+
+    --amber: #fdd663;
+    --amber-fill: #fdd663;
+    --amber-soft: rgba(253, 214, 99, 0.18);
+
+    --green: #81c995;
+    --green-fill: #81c995;
+    --green-soft: rgba(129, 201, 149, 0.16);
+
+    --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.35), 0 1px 3px rgba(0, 0, 0, 0.3);
+    --shadow-2: 0 2px 6px rgba(0, 0, 0, 0.4), 0 6px 16px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  .material-symbols-outlined {
+    font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+    font-size: 20px;
+    line-height: 1;
+    user-select: none;
+    display: inline-block;
+  }
+  .material-symbols-outlined.filled { font-variation-settings: "FILL" 1, "wght" 400, "GRAD" 0, "opsz" 24; }
+  .material-symbols-outlined.sm { font-size: 16px; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: 32px 16px 80px;
+  }
+
+  .sheet { width: 100%; max-width: 660px; }
+
+  header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .app-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: var(--blue);
+    color: var(--blue-ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  h1 {
+    font-family: "Zen Maru Gothic", var(--font-body);
+    font-size: 25px;
+    font-weight: 700;
+    color: var(--blue);
+    margin: 0;
+    letter-spacing: 0.03em;
+  }
+
+  /* ---------- composer ---------- */
+
+  .composer {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow-1);
+  }
+
+  .composer-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .composer-row .material-symbols-outlined { color: var(--blue); flex-shrink: 0; }
+
+  .composer input[type="text"]#task-input {
+    flex: 1;
+    min-width: 0;
+    font: inherit;
+    font-size: 15px;
+    color: var(--text);
+    background: transparent;
+    border: none;
+    padding: 6px 0;
+  }
+  .composer input[type="text"]#task-input:focus { outline: none; }
+  .composer input[type="text"]#task-input::placeholder { color: var(--text-faint); }
+
+  .add-btn {
+    font: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--blue-ink);
+    background: var(--blue);
+    border: none;
+    border-radius: 8px;
+    padding: 8px 18px;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .add-btn:hover { background: var(--blue-hover); }
+  .add-btn:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+  .add-btn:disabled { opacity: 0.5; cursor: default; }
+
+  .composer-detail {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+  }
+
+  .detail-field {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--text-secondary);
+  }
+  .detail-field .material-symbols-outlined { font-size: 18px; color: var(--text-faint); }
+
+  .detail-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-faint);
+    flex-shrink: 0;
+  }
+
+  .detail-field input[type="date"],
+  .detail-field input[type="text"] {
+    font: inherit;
+    font-size: 13px;
+    color: var(--text);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 5px 8px;
+  }
+  .detail-field input[type="date"] { font-family: var(--font-mono); width: 142px; }
+  .detail-field input[type="text"] { width: 160px; }
+  .detail-field input:focus-visible { outline: 2px solid var(--blue); outline-offset: 1px; }
+
+  .priority-group { display: flex; align-items: center; gap: 6px; }
+  .priority-picker { display: flex; gap: 4px; }
+  .priority-chip {
+    font: inherit;
+    font-size: 12px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-secondary);
+    border-radius: 100px;
+    padding: 5px 12px;
+    cursor: pointer;
+  }
+  .priority-chip[data-active="true"][data-level="high"] { background: var(--red-soft); border-color: var(--red); color: var(--red); }
+  .priority-chip[data-active="true"][data-level="mid"] { background: var(--amber-soft); border-color: var(--amber-fill); color: var(--amber); }
+  .priority-chip[data-active="true"][data-level="low"] { background: var(--surface-hover); border-color: var(--border-strong); color: var(--text); }
+  .priority-chip:focus-visible { outline: 2px solid var(--blue); outline-offset: 1px; }
+
+  /* ---------- search & filter ---------- */
+
+  .toolbar { display: flex; gap: 8px; margin-bottom: 14px; }
+
+  .search-box {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 9px 14px;
+  }
+  .search-box:focus-within { border-color: var(--blue); box-shadow: 0 0 0 1px var(--blue); }
+  .search-box .material-symbols-outlined { color: var(--text-faint); flex-shrink: 0; }
+  .search-box input {
+    flex: 1;
+    min-width: 0;
+    font: inherit;
+    font-size: 14px;
+    color: var(--text);
+    background: transparent;
+    border: none;
+  }
+  .search-box input:focus { outline: none; }
+  .search-box input::placeholder { color: var(--text-faint); }
+  .search-clear {
+    border: none;
+    background: transparent;
+    color: var(--text-faint);
+    cursor: pointer;
+    display: flex;
+    border-radius: 100px;
+    padding: 2px;
+  }
+  .search-clear:hover { color: var(--text); background: var(--surface-hover); }
+
+  .filter-toggle {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    flex-shrink: 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    color: var(--text-secondary);
+    cursor: pointer;
+  }
+  .filter-toggle:hover { background: var(--surface-hover); }
+  .filter-toggle[aria-pressed="true"] { background: var(--blue-soft); border-color: var(--blue); color: var(--blue); }
+  .filter-toggle:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+  .filter-toggle .badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: var(--blue);
+    color: var(--blue-ink);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    width: 16px;
+    height: 16px;
+    border-radius: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .filter-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px;
+    margin: -6px 0 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .filter-group { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+  .filter-group .filter-label {
+    font-size: 12px;
+    color: var(--text-faint);
+    width: 56px;
+    flex-shrink: 0;
+  }
+
+  .chip {
+    font: inherit;
+    font-size: 12px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-secondary);
+    border-radius: 100px;
+    padding: 5px 12px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .chip:hover { background: var(--surface-hover); }
+  .chip[aria-pressed="true"] { background: var(--blue-soft); border-color: var(--blue); color: var(--blue); font-weight: 500; }
+  .chip:focus-visible { outline: 2px solid var(--blue); outline-offset: 1px; }
+
+  .due-select {
+    font: inherit;
+    font-size: 12px;
+    color: var(--text);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 5px 10px;
+  }
+
+  .filter-clear {
+    align-self: flex-start;
+    font: inherit;
+    font-size: 12px;
+    color: var(--blue);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 2px 0;
+  }
+  .filter-clear:hover { text-decoration: underline; }
+
+  /* ---------- tabs ---------- */
+
+  .tabs {
+    display: flex;
+    gap: 4px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 14px;
+  }
+
+  .tab {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    padding: 10px 12px;
+    cursor: pointer;
+    margin-bottom: -1px;
+  }
+  .tab:hover { color: var(--text); background: var(--surface-hover); border-radius: 6px 6px 0 0; }
+  .tab:focus-visible { outline: 2px solid var(--blue); outline-offset: -2px; }
+  .tab[aria-selected="true"] { color: var(--blue); border-bottom-color: var(--blue); }
+  .tab .count { font-family: var(--font-mono); font-size: 11px; color: var(--text-faint); }
+  .tab[aria-selected="true"] .count { color: var(--blue); }
+
+  /* ---------- bulk bar ---------- */
+
+  .bulk-bar {
+    display: flex;
+    justify-content: flex-end;
+    gap: 4px;
+    margin-bottom: 8px;
+  }
+
+  .text-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--blue);
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    padding: 7px 10px;
+    cursor: pointer;
+  }
+  .text-btn .material-symbols-outlined { font-size: 17px; }
+  .text-btn:hover:not(:disabled) { background: var(--blue-soft); }
+  .text-btn:focus-visible { outline: 2px solid var(--blue); outline-offset: 1px; }
+  .text-btn:disabled { color: var(--text-faint); cursor: default; }
+  .text-btn.danger { color: var(--red); }
+  .text-btn.danger:hover:not(:disabled) { background: var(--red-soft); }
+  .text-btn.danger:disabled { color: var(--text-faint); }
+
+  /* ---------- list & rows ---------- */
+
+  .list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+
+  .row {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    box-shadow: var(--shadow-1);
+    transition: border-color 0.1s ease;
+  }
+  .row.drag-over-before { border-top: 2px solid var(--blue); }
+  .row.drag-over-after { border-bottom: 2px solid var(--blue); }
+  .row.dragging { opacity: 0.5; }
+
+  .row-main {
+    display: flex;
+    align-items: flex-start;
+    gap: 4px;
+    padding: 10px 10px 10px 4px;
+  }
+
+  .drag-handle {
+    color: var(--text-faint);
+    cursor: grab;
+    display: flex;
+    align-items: center;
+    padding: 6px 2px;
+    flex-shrink: 0;
+    opacity: 0.35;
+  }
+  .row:hover .drag-handle { opacity: 1; }
+  .drag-handle:active { cursor: grabbing; }
+
+  .status-btn {
+    flex-shrink: 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding: 6px 4px;
+    border-radius: 100px;
+    color: var(--text-faint);
+  }
+  .status-btn:hover { background: var(--surface-hover); }
+  .status-btn:focus-visible { outline: 2px solid var(--blue); outline-offset: 1px; }
+  .status-btn[data-status="inprogress"] { color: var(--amber-fill); }
+  .status-btn[data-status="done"] { color: var(--green-fill); }
+
+  .row-body { flex: 1; min-width: 0; padding: 6px 0; }
+
+  .row-text {
+    font-size: 14.5px;
+    line-height: 1.5;
+    word-break: break-word;
+    cursor: text;
+  }
+  .row[data-status="done"] .row-text { color: var(--text-faint); text-decoration: line-through; }
+
+  .row-text-input {
+    width: 100%;
+    font: inherit;
+    font-size: 14.5px;
+    color: var(--text);
+    background: var(--bg);
+    border: 1px solid var(--blue);
+    border-radius: 6px;
+    padding: 4px 6px;
+  }
+  .row-text-input:focus { outline: none; }
+
+  .meta-line {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin-top: 6px;
+  }
+
+  .meta-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11.5px;
+    color: var(--text-secondary);
+    background: var(--surface-hover);
+    border-radius: 100px;
+    padding: 3px 9px;
+  }
+  .meta-chip .material-symbols-outlined { font-size: 14px; }
+
+  .due-field {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11.5px;
+    color: var(--text-secondary);
+    background: var(--surface-hover);
+    border-radius: 100px;
+    padding: 2px 9px 2px 9px;
+  }
+  .due-field .material-symbols-outlined { font-size: 14px; color: var(--text-faint); }
+  .due-field input[type="date"] {
+    font: inherit;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-secondary);
+    background: transparent;
+    border: none;
+    width: 92px;
+  }
+  .due-field input[type="date"]:focus-visible { outline: 1px solid var(--blue); border-radius: 4px; }
+  .due-field[data-due="overdue"] { background: var(--red-soft-strong); color: var(--red); }
+  .due-field[data-due="overdue"] input,
+  .due-field[data-due="overdue"] .material-symbols-outlined { color: var(--red); }
+  .due-field[data-due="today"] { background: var(--amber-soft); color: var(--amber); }
+  .due-field[data-due="today"] input,
+  .due-field[data-due="today"] .material-symbols-outlined { color: var(--amber); }
+
+  .tag-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 11.5px;
+    color: var(--blue);
+    background: var(--blue-soft);
+    border-radius: 100px;
+    padding: 3px 6px 3px 9px;
+  }
+  .tag-chip button {
+    border: none;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    display: flex;
+    padding: 1px;
+    opacity: 0.7;
+  }
+  .tag-chip button:hover { opacity: 1; }
+
+  .tag-add {
+    display: inline-flex;
+    align-items: center;
+  }
+  .tag-add input {
+    font: inherit;
+    font-size: 11.5px;
+    color: var(--text-secondary);
+    background: transparent;
+    border: 1px dashed var(--border-strong);
+    border-radius: 100px;
+    padding: 3px 9px;
+    width: 74px;
+  }
+  .tag-add input:focus { outline: none; border-color: var(--blue); width: 110px; }
+  .tag-add input::placeholder { color: var(--text-faint); }
+
+  .subtask-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font: inherit;
+    font-size: 11.5px;
+    color: var(--text-secondary);
+    background: var(--surface-hover);
+    border: none;
+    border-radius: 100px;
+    padding: 3px 9px 3px 7px;
+    cursor: pointer;
+  }
+  .subtask-toggle:hover { background: var(--border); }
+  .subtask-toggle .material-symbols-outlined { font-size: 14px; }
+
+  .row-actions { display: flex; align-items: flex-start; gap: 0; flex-shrink: 0; }
+  .icon-btn {
+    border: none;
+    background: transparent;
+    color: var(--text-faint);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding: 6px;
+    border-radius: 100px;
+    opacity: 0;
+  }
+  .row:hover .icon-btn, .row:focus-within .icon-btn { opacity: 1; }
+  .icon-btn:hover { background: var(--surface-hover); color: var(--text); }
+  .icon-btn:focus-visible { outline: 2px solid var(--blue); outline-offset: 1px; opacity: 1; }
+  .icon-btn.delete:hover { color: var(--red); background: var(--red-soft); }
+  .icon-btn.priority[data-level="high"] { color: var(--red); opacity: 1; }
+  .icon-btn.priority[data-level="mid"] { color: var(--amber-fill); opacity: 1; }
+  .icon-btn.priority[data-level="low"] { color: var(--text-faint); opacity: 1; }
+
+  .subtask-panel {
+    border-top: 1px solid var(--border);
+    padding: 8px 12px 10px 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .subtask-row { display: flex; align-items: center; gap: 8px; padding: 3px 0; }
+  .subtask-row .status-btn { padding: 3px; }
+  .subtask-row .material-symbols-outlined { font-size: 18px; }
+  .subtask-text { flex: 1; font-size: 13px; }
+  .subtask-row[data-done="true"] .subtask-text { color: var(--text-faint); text-decoration: line-through; }
+  .subtask-del {
+    border: none;
+    background: transparent;
+    color: var(--text-faint);
+    cursor: pointer;
+    display: flex;
+    padding: 3px;
+    border-radius: 100px;
+    opacity: 0;
+  }
+  .subtask-row:hover .subtask-del { opacity: 1; }
+  .subtask-del:hover { color: var(--red); }
+
+  .subtask-add { display: flex; align-items: center; gap: 8px; padding: 5px 0 2px; }
+  .subtask-add .material-symbols-outlined { font-size: 18px; color: var(--text-faint); }
+  .subtask-add input {
+    flex: 1;
+    font: inherit;
+    font-size: 13px;
+    color: var(--text);
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--border);
+    padding: 4px 2px;
+  }
+  .subtask-add input:focus { outline: none; border-bottom-color: var(--blue); }
+  .subtask-add input::placeholder { color: var(--text-faint); }
+
+  .empty {
+    text-align: center;
+    color: var(--text-faint);
+    font-size: 13.5px;
+    padding: 48px 20px;
+    border: 1px dashed var(--border);
+    border-radius: 12px;
+  }
+
+  @media (max-width: 480px) {
+    .detail-field input[type="text"] { width: 120px; }
+    .filter-group .filter-label { width: 100%; }
+  }
+</style>
+
+<div class="sheet">
+  <header>
+    <div class="app-icon"><span class="material-symbols-outlined">checklist</span></div>
+    <h1>ToDo管理</h1>
+  </header>
+
+  <form class="composer" id="composer">
+    <div class="composer-row">
+      <span class="material-symbols-outlined">add_circle</span>
+      <input type="text" id="task-input" placeholder="タスクを入力…" autocomplete="off" maxlength="200" />
+      <button type="submit" class="add-btn">追加</button>
+    </div>
+    <div class="composer-detail">
+      <label class="detail-field">
+        <span class="material-symbols-outlined">calendar_today</span>
+        <span class="detail-label">期限</span>
+        <input type="date" id="draft-due" />
+      </label>
+      <div class="priority-group">
+        <span class="detail-label">優先度</span>
+        <div class="priority-picker" id="draft-priority" role="radiogroup" aria-label="優先度"></div>
+      </div>
+      <label class="detail-field">
+        <span class="material-symbols-outlined">local_offer</span>
+        <span class="detail-label">タグ</span>
+        <input type="text" id="draft-tags" placeholder="仕事、プライベートなど" list="tag-list" />
+      </label>
+    </div>
+  </form>
+  <datalist id="tag-list"></datalist>
+
+  <div class="toolbar">
+    <label class="search-box">
+      <span class="material-symbols-outlined">search</span>
+      <input type="text" id="search-input" placeholder="タスクやタグを検索…" autocomplete="off" />
+      <button type="button" class="search-clear" id="search-clear" style="display:none" aria-label="検索をクリア">
+        <span class="material-symbols-outlined sm">close</span>
+      </button>
+    </label>
+    <button type="button" class="filter-toggle" id="filter-toggle" aria-pressed="false" title="フィルタ">
+      <span class="material-symbols-outlined">tune</span>
+      <span class="badge" id="filter-badge" style="display:none">0</span>
+    </button>
+  </div>
+
+  <div class="filter-panel" id="filter-panel" style="display:none">
+    <div class="filter-group">
+      <span class="filter-label">タグ</span>
+      <div id="filter-tags"></div>
+    </div>
+    <div class="filter-group">
+      <span class="filter-label">優先度</span>
+      <div id="filter-priority"></div>
+    </div>
+    <div class="filter-group">
+      <span class="filter-label">期限</span>
+      <select class="due-select" id="filter-due">
+        <option value="all">すべて</option>
+        <option value="overdue">期限切れ</option>
+        <option value="today">今日</option>
+        <option value="upcoming">今後の予定</option>
+        <option value="none">期限なし</option>
+      </select>
+    </div>
+    <button type="button" class="filter-clear" id="filter-clear">フィルタをクリア</button>
+  </div>
+
+  <div class="tabs" role="tablist" id="tabs"></div>
+
+  <div class="bulk-bar">
+    <button type="button" class="text-btn" id="bulk-complete">
+      <span class="material-symbols-outlined">done_all</span>すべて完了にする
+    </button>
+    <button type="button" class="text-btn danger" id="bulk-delete">
+      <span class="material-symbols-outlined">delete_sweep</span>完了済みをすべて削除
+    </button>
+  </div>
+
+  <ul class="list" id="list"></ul>
+</div>
+
+<script>
+  (function () {
+    "use strict";
+
+    var STORAGE_KEY = "task-ledger.tasks.v1";
+    var STATUSES = [
+      { key: "notstarted", label: "未着手", icon: "radio_button_unchecked" },
+      { key: "inprogress", label: "着手中", icon: "adjust" },
+      { key: "done", label: "完了", icon: "check_circle" }
+    ];
+    var STATUS_CYCLE = { notstarted: "inprogress", inprogress: "done", done: "notstarted" };
+    var TABS = [{ key: "all", label: "すべて" }].concat(STATUSES.map(function (s) { return { key: s.key, label: s.label }; }));
+    var PRIORITIES = [
+      { key: "high", label: "高" },
+      { key: "mid", label: "中" },
+      { key: "low", label: "低" }
+    ];
+    var PRIORITY_CYCLE = { high: "mid", mid: "low", low: "high" };
+    var PRIORITY_ICON = { high: "flag", mid: "flag", low: "outlined_flag" };
+
+    var ui = {
+      tab: "all",
+      query: "",
+      tagFilter: new Set(),
+      priorityFilter: new Set(),
+      dueFilter: "all",
+      filterOpen: false,
+      expanded: new Set(),
+      editingId: null,
+      draftPriority: "mid"
+    };
+
+    var tasks = load();
+
+    var els = {
+      composer: document.getElementById("composer"),
+      taskInput: document.getElementById("task-input"),
+      draftDue: document.getElementById("draft-due"),
+      draftPriority: document.getElementById("draft-priority"),
+      draftTags: document.getElementById("draft-tags"),
+      tagList: document.getElementById("tag-list"),
+      searchInput: document.getElementById("search-input"),
+      searchClear: document.getElementById("search-clear"),
+      filterToggle: document.getElementById("filter-toggle"),
+      filterBadge: document.getElementById("filter-badge"),
+      filterPanel: document.getElementById("filter-panel"),
+      filterTags: document.getElementById("filter-tags"),
+      filterPriority: document.getElementById("filter-priority"),
+      filterDue: document.getElementById("filter-due"),
+      filterClear: document.getElementById("filter-clear"),
+      tabs: document.getElementById("tabs"),
+      bulkComplete: document.getElementById("bulk-complete"),
+      bulkDelete: document.getElementById("bulk-delete"),
+      list: document.getElementById("list")
+    };
+
+    var dragState = null;
+
+    /* ---------- persistence ---------- */
+
+    function load() {
+      var raw;
+      try { raw = localStorage.getItem(STORAGE_KEY); } catch (e) { raw = null; }
+      var parsed;
+      try { parsed = raw ? JSON.parse(raw) : []; } catch (e) { parsed = []; }
+      if (!Array.isArray(parsed)) parsed = [];
+      return parsed.map(normalizeTask);
+    }
+
+    function normalizeTask(t) {
+      return {
+        id: t.id || makeId(),
+        text: typeof t.text === "string" ? t.text : "",
+        status: STATUSES.some(function (s) { return s.key === t.status; }) ? t.status : "notstarted",
+        priority: PRIORITIES.some(function (p) { return p.key === t.priority; }) ? t.priority : "mid",
+        dueDate: t.dueDate || "",
+        tags: Array.isArray(t.tags) ? t.tags.filter(Boolean) : [],
+        subtasks: Array.isArray(t.subtasks) ? t.subtasks.map(function (s) {
+          return { id: s.id || makeId(), text: s.text || "", done: !!s.done };
+        }) : []
+      };
+    }
+
+    function save() {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks)); } catch (e) {}
+    }
+
+    function makeId() {
+      return "id" + Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
+    }
+
+    function todayISO() {
+      var d = new Date();
+      var m = String(d.getMonth() + 1).padStart(2, "0");
+      var day = String(d.getDate()).padStart(2, "0");
+      return d.getFullYear() + "-" + m + "-" + day;
+    }
+
+    /* ---------- mutations ---------- */
+
+    function addTask(text, dueDate, priority, tags) {
+      tasks.unshift({
+        id: makeId(),
+        text: text,
+        status: "notstarted",
+        priority: priority || "mid",
+        dueDate: dueDate || "",
+        tags: tags || [],
+        subtasks: []
+      });
+      save();
+      render();
+    }
+
+    function findTask(id) { return tasks.find(function (t) { return t.id === id; }); }
+
+    function cycleStatus(id) {
+      var t = findTask(id);
+      if (!t) return;
+      t.status = STATUS_CYCLE[t.status];
+      save();
+      render();
+    }
+
+    function cyclePriority(id) {
+      var t = findTask(id);
+      if (!t) return;
+      t.priority = PRIORITY_CYCLE[t.priority];
+      save();
+      render();
+    }
+
+    function setDueDate(id, value) {
+      var t = findTask(id);
+      if (!t) return;
+      t.dueDate = value || "";
+      save();
+      render();
+    }
+
+    function setText(id, text) {
+      var t = findTask(id);
+      if (!t) return;
+      var trimmed = text.trim();
+      if (trimmed) t.text = trimmed;
+      ui.editingId = null;
+      save();
+      render();
+    }
+
+    function addTag(id, raw) {
+      var t = findTask(id);
+      if (!t) return;
+      var parts = raw.split(/[,、]/).map(function (s) { return s.trim(); }).filter(Boolean);
+      parts.forEach(function (tag) {
+        if (t.tags.indexOf(tag) === -1) t.tags.push(tag);
+      });
+      save();
+      render();
+    }
+
+    function removeTag(id, tag) {
+      var t = findTask(id);
+      if (!t) return;
+      t.tags = t.tags.filter(function (x) { return x !== tag; });
+      save();
+      render();
+    }
+
+    function removeTask(id) {
+      tasks = tasks.filter(function (t) { return t.id !== id; });
+      save();
+      render();
+    }
+
+    function addSubtask(id, text) {
+      var t = findTask(id);
+      if (!t || !text.trim()) return;
+      t.subtasks.push({ id: makeId(), text: text.trim(), done: false });
+      save();
+      render();
+    }
+
+    function toggleSubtask(taskId, subId) {
+      var t = findTask(taskId);
+      if (!t) return;
+      var s = t.subtasks.find(function (x) { return x.id === subId; });
+      if (!s) return;
+      s.done = !s.done;
+      save();
+      render();
+    }
+
+    function removeSubtask(taskId, subId) {
+      var t = findTask(taskId);
+      if (!t) return;
+      t.subtasks = t.subtasks.filter(function (x) { return x.id !== subId; });
+      save();
+      render();
+    }
+
+    function reorder(draggedId, targetId, position) {
+      var fromIdx = tasks.findIndex(function (t) { return t.id === draggedId; });
+      if (fromIdx < 0) return;
+      var moved = tasks.splice(fromIdx, 1)[0];
+      var toIdx = tasks.findIndex(function (t) { return t.id === targetId; });
+      if (toIdx < 0) toIdx = tasks.length;
+      if (position === "after") toIdx += 1;
+      tasks.splice(toIdx, 0, moved);
+      save();
+      render();
+    }
+
+    /* ---------- filtering ---------- */
+
+    function allTags() {
+      var set = new Set();
+      tasks.forEach(function (t) { t.tags.forEach(function (tag) { set.add(tag); }); });
+      return Array.from(set).sort();
+    }
+
+    function matchesFiltersExceptTab(t) {
+      if (ui.query) {
+        var q = ui.query.toLowerCase();
+        var inText = t.text.toLowerCase().indexOf(q) !== -1;
+        var inTags = t.tags.some(function (tag) { return tag.toLowerCase().indexOf(q) !== -1; });
+        if (!inText && !inTags) return false;
+      }
+      if (ui.tagFilter.size > 0 && !t.tags.some(function (tag) { return ui.tagFilter.has(tag); })) return false;
+      if (ui.priorityFilter.size > 0 && !ui.priorityFilter.has(t.priority)) return false;
+      if (ui.dueFilter !== "all") {
+        var today = todayISO();
+        if (ui.dueFilter === "overdue" && !(t.dueDate && t.dueDate < today && t.status !== "done")) return false;
+        if (ui.dueFilter === "today" && t.dueDate !== today) return false;
+        if (ui.dueFilter === "upcoming" && !(t.dueDate && t.dueDate > today)) return false;
+        if (ui.dueFilter === "none" && t.dueDate) return false;
+      }
+      return true;
+    }
+
+    function visibleTasks() {
+      return tasks.filter(function (t) {
+        if (ui.tab !== "all" && t.status !== ui.tab) return false;
+        return matchesFiltersExceptTab(t);
+      });
+    }
+
+    function activeFilterCount() {
+      return ui.tagFilter.size + ui.priorityFilter.size + (ui.dueFilter !== "all" ? 1 : 0);
+    }
+
+    function dueState(t) {
+      if (!t.dueDate) return "";
+      var today = todayISO();
+      if (t.dueDate < today && t.status !== "done") return "overdue";
+      if (t.dueDate === today) return "today";
+      return "";
+    }
+
+    /* ---------- rendering ---------- */
+
+    function render() {
+      renderTagList();
+      renderDraftPriority();
+      renderFilterToggle();
+      renderFilterPanel();
+      renderTabs();
+      renderBulkBar();
+      renderList();
+    }
+
+    function renderTagList() {
+      var tags = allTags();
+      els.tagList.innerHTML = tags.map(function (tag) {
+        return '<option value="' + escapeAttr(tag) + '"></option>';
+      }).join("");
+    }
+
+    function renderDraftPriority() {
+      els.draftPriority.innerHTML = "";
+      PRIORITIES.forEach(function (p) {
+        var btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "priority-chip";
+        btn.dataset.level = p.key;
+        btn.dataset.active = String(ui.draftPriority === p.key);
+        btn.setAttribute("role", "radio");
+        btn.setAttribute("aria-checked", String(ui.draftPriority === p.key));
+        btn.textContent = p.label;
+        btn.addEventListener("click", function () {
+          ui.draftPriority = p.key;
+          renderDraftPriority();
+        });
+        els.draftPriority.appendChild(btn);
+      });
+    }
+
+    function renderFilterToggle() {
+      var count = activeFilterCount();
+      els.filterToggle.setAttribute("aria-pressed", String(ui.filterOpen));
+      if (count > 0) {
+        els.filterBadge.style.display = "flex";
+        els.filterBadge.textContent = String(count);
+      } else {
+        els.filterBadge.style.display = "none";
+      }
+      els.filterPanel.style.display = ui.filterOpen ? "flex" : "none";
+    }
+
+    function renderFilterPanel() {
+      var tags = allTags();
+      els.filterTags.innerHTML = "";
+      if (tags.length === 0) {
+        var none = document.createElement("span");
+        none.style.fontSize = "12px";
+        none.style.color = "var(--text-faint)";
+        none.textContent = "タグはまだありません";
+        els.filterTags.appendChild(none);
+      } else {
+        tags.forEach(function (tag) {
+          var chip = document.createElement("button");
+          chip.type = "button";
+          chip.className = "chip";
+          chip.setAttribute("aria-pressed", String(ui.tagFilter.has(tag)));
+          chip.textContent = tag;
+          chip.addEventListener("click", function () {
+            if (ui.tagFilter.has(tag)) ui.tagFilter.delete(tag); else ui.tagFilter.add(tag);
+            render();
+          });
+          els.filterTags.appendChild(chip);
+        });
+      }
+
+      els.filterPriority.innerHTML = "";
+      PRIORITIES.forEach(function (p) {
+        var chip = document.createElement("button");
+        chip.type = "button";
+        chip.className = "chip";
+        chip.setAttribute("aria-pressed", String(ui.priorityFilter.has(p.key)));
+        chip.textContent = p.label;
+        chip.addEventListener("click", function () {
+          if (ui.priorityFilter.has(p.key)) ui.priorityFilter.delete(p.key); else ui.priorityFilter.add(p.key);
+          render();
+        });
+        els.filterPriority.appendChild(chip);
+      });
+
+      els.filterDue.value = ui.dueFilter;
+    }
+
+    function renderTabs() {
+      els.tabs.innerHTML = "";
+      TABS.forEach(function (tab) {
+        var count = tasks.filter(function (t) {
+          if (tab.key !== "all" && t.status !== tab.key) return false;
+          return matchesFiltersExceptTab(t);
+        }).length;
+        var btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "tab";
+        btn.setAttribute("role", "tab");
+        btn.setAttribute("aria-selected", String(tab.key === ui.tab));
+        btn.innerHTML = tab.label + ' <span class="count">' + count + "</span>";
+        btn.addEventListener("click", function () { ui.tab = tab.key; render(); });
+        els.tabs.appendChild(btn);
+      });
+    }
+
+    function renderBulkBar() {
+      var visible = visibleTasks();
+      var hasIncomplete = visible.some(function (t) { return t.status !== "done"; });
+      var hasDone = visible.some(function (t) { return t.status === "done"; });
+      els.bulkComplete.disabled = !hasIncomplete;
+      els.bulkDelete.disabled = !hasDone;
+    }
+
+    function renderList() {
+      els.list.innerHTML = "";
+      var visible = visibleTasks();
+
+      if (visible.length === 0) {
+        var empty = document.createElement("li");
+        empty.className = "empty";
+        empty.textContent = tasks.length === 0
+          ? "タスクはまだありません。上の入力欄から追加してください。"
+          : "条件に一致するタスクはありません。";
+        els.list.appendChild(empty);
+        return;
+      }
+
+      visible.forEach(function (t) { els.list.appendChild(renderRow(t)); });
+    }
+
+    function renderRow(t) {
+      var li = document.createElement("li");
+      li.className = "row";
+      li.setAttribute("data-status", t.status);
+      li.draggable = true;
+      li.dataset.id = t.id;
+
+      var main = document.createElement("div");
+      main.className = "row-main";
+
+      var handle = document.createElement("span");
+      handle.className = "material-symbols-outlined drag-handle";
+      handle.textContent = "drag_indicator";
+      main.appendChild(handle);
+
+      var statusInfo = STATUSES.find(function (s) { return s.key === t.status; });
+      var statusBtn = document.createElement("button");
+      statusBtn.type = "button";
+      statusBtn.className = "status-btn";
+      statusBtn.dataset.status = t.status;
+      statusBtn.title = "クリックで次のステータスへ (" + statusInfo.label + ")";
+      statusBtn.innerHTML = '<span class="material-symbols-outlined' + (t.status === "done" ? " filled" : "") + '">' + statusInfo.icon + "</span>";
+      statusBtn.addEventListener("click", function () { cycleStatus(t.id); });
+      main.appendChild(statusBtn);
+
+      var body = document.createElement("div");
+      body.className = "row-body";
+
+      if (ui.editingId === t.id) {
+        var input = document.createElement("input");
+        input.type = "text";
+        input.className = "row-text-input";
+        input.value = t.text;
+        input.maxLength = 200;
+        input.addEventListener("keydown", function (e) {
+          if (e.key === "Enter") { e.preventDefault(); setText(t.id, input.value); }
+          if (e.key === "Escape") { e.preventDefault(); ui.editingId = null; render(); }
+        });
+        input.addEventListener("blur", function () { setText(t.id, input.value); });
+        body.appendChild(input);
+        setTimeout(function () { input.focus(); input.select(); }, 0);
+      } else {
+        var textEl = document.createElement("span");
+        textEl.className = "row-text";
+        textEl.textContent = t.text;
+        textEl.title = "ダブルクリックで編集";
+        textEl.addEventListener("dblclick", function () { ui.editingId = t.id; render(); });
+        body.appendChild(textEl);
+      }
+
+      var meta = document.createElement("div");
+      meta.className = "meta-line";
+
+      var due = dueState(t);
+      var dueField = document.createElement("label");
+      dueField.className = "due-field";
+      if (due) dueField.setAttribute("data-due", due);
+      dueField.innerHTML = '<span class="material-symbols-outlined">calendar_today</span>';
+      var dueInput = document.createElement("input");
+      dueInput.type = "date";
+      dueInput.value = t.dueDate || "";
+      dueInput.addEventListener("change", function () { setDueDate(t.id, dueInput.value); });
+      dueField.appendChild(dueInput);
+      meta.appendChild(dueField);
+
+      t.tags.forEach(function (tag) {
+        var chip = document.createElement("span");
+        chip.className = "tag-chip";
+        var label = document.createElement("span");
+        label.textContent = tag;
+        var rm = document.createElement("button");
+        rm.type = "button";
+        rm.setAttribute("aria-label", tag + "を削除");
+        rm.innerHTML = '<span class="material-symbols-outlined sm">close</span>';
+        rm.addEventListener("click", function () { removeTag(t.id, tag); });
+        chip.appendChild(label);
+        chip.appendChild(rm);
+        meta.appendChild(chip);
+      });
+
+      var tagAdd = document.createElement("span");
+      tagAdd.className = "tag-add";
+      var tagInput = document.createElement("input");
+      tagInput.type = "text";
+      tagInput.placeholder = "+タグ";
+      tagInput.setAttribute("list", "tag-list");
+      tagInput.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          if (tagInput.value.trim()) { addTag(t.id, tagInput.value); }
+        }
+      });
+      tagAdd.appendChild(tagInput);
+      meta.appendChild(tagAdd);
+
+      var doneSubs = t.subtasks.filter(function (s) { return s.done; }).length;
+      var subToggle = document.createElement("button");
+      subToggle.type = "button";
+      subToggle.className = "subtask-toggle";
+      subToggle.innerHTML = '<span class="material-symbols-outlined">checklist</span>' +
+        (t.subtasks.length > 0 ? doneSubs + "/" + t.subtasks.length : "サブタスク");
+      subToggle.addEventListener("click", function () {
+        if (ui.expanded.has(t.id)) ui.expanded.delete(t.id); else ui.expanded.add(t.id);
+        render();
+      });
+      meta.appendChild(subToggle);
+
+      body.appendChild(meta);
+      main.appendChild(body);
+
+      var actions = document.createElement("div");
+      actions.className = "row-actions";
+
+      var prBtn = document.createElement("button");
+      prBtn.type = "button";
+      prBtn.className = "icon-btn priority";
+      prBtn.dataset.level = t.priority;
+      prBtn.title = "優先度: " + PRIORITIES.find(function (p) { return p.key === t.priority; }).label + "(クリックで変更)";
+      prBtn.innerHTML = '<span class="material-symbols-outlined' + (t.priority !== "low" ? " filled" : "") + '">' + PRIORITY_ICON[t.priority] + "</span>";
+      prBtn.addEventListener("click", function () { cyclePriority(t.id); });
+      actions.appendChild(prBtn);
+
+      var editBtn = document.createElement("button");
+      editBtn.type = "button";
+      editBtn.className = "icon-btn";
+      editBtn.title = "編集";
+      editBtn.innerHTML = '<span class="material-symbols-outlined">edit</span>';
+      editBtn.addEventListener("click", function () { ui.editingId = t.id; render(); });
+      actions.appendChild(editBtn);
+
+      var delBtn = document.createElement("button");
+      delBtn.type = "button";
+      delBtn.className = "icon-btn delete";
+      delBtn.title = "削除";
+      delBtn.innerHTML = '<span class="material-symbols-outlined">delete</span>';
+      delBtn.addEventListener("click", function () { removeTask(t.id); });
+      actions.appendChild(delBtn);
+
+      main.appendChild(actions);
+      li.appendChild(main);
+
+      if (ui.expanded.has(t.id)) {
+        li.appendChild(renderSubtaskPanel(t));
+      }
+
+      attachDrag(li, t.id);
+
+      return li;
+    }
+
+    function renderSubtaskPanel(t) {
+      var panel = document.createElement("div");
+      panel.className = "subtask-panel";
+
+      t.subtasks.forEach(function (s) {
+        var row = document.createElement("div");
+        row.className = "subtask-row";
+        row.setAttribute("data-done", String(s.done));
+
+        var btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "status-btn";
+        btn.innerHTML = '<span class="material-symbols-outlined' + (s.done ? " filled" : "") + '">' +
+          (s.done ? "check_circle" : "radio_button_unchecked") + "</span>";
+        if (s.done) btn.style.color = "var(--green-fill)";
+        btn.addEventListener("click", function () { toggleSubtask(t.id, s.id); });
+        row.appendChild(btn);
+
+        var text = document.createElement("span");
+        text.className = "subtask-text";
+        text.textContent = s.text;
+        row.appendChild(text);
+
+        var del = document.createElement("button");
+        del.type = "button";
+        del.className = "subtask-del";
+        del.setAttribute("aria-label", "サブタスクを削除");
+        del.innerHTML = '<span class="material-symbols-outlined sm">close</span>';
+        del.addEventListener("click", function () { removeSubtask(t.id, s.id); });
+        row.appendChild(del);
+
+        panel.appendChild(row);
+      });
+
+      var addRow = document.createElement("div");
+      addRow.className = "subtask-add";
+      addRow.innerHTML = '<span class="material-symbols-outlined">add</span>';
+      var addInput = document.createElement("input");
+      addInput.type = "text";
+      addInput.placeholder = "サブタスクを追加…";
+      addInput.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          if (addInput.value.trim()) { addSubtask(t.id, addInput.value); }
+        }
+      });
+      addRow.appendChild(addInput);
+      panel.appendChild(addRow);
+
+      return panel;
+    }
+
+    /* ---------- drag & drop ---------- */
+
+    function attachDrag(row, id) {
+      row.addEventListener("dragstart", function (e) {
+        if (!e.target.closest(".drag-handle")) { e.preventDefault(); return; }
+        dragState = id;
+        row.classList.add("dragging");
+        e.dataTransfer.effectAllowed = "move";
+        try { e.dataTransfer.setData("text/plain", id); } catch (err) {}
+      });
+
+      row.addEventListener("dragover", function (e) {
+        if (!dragState || dragState === id) return;
+        e.preventDefault();
+        var rect = row.getBoundingClientRect();
+        var before = (e.clientY - rect.top) < rect.height / 2;
+        row.classList.toggle("drag-over-before", before);
+        row.classList.toggle("drag-over-after", !before);
+      });
+
+      row.addEventListener("dragleave", function () {
+        row.classList.remove("drag-over-before", "drag-over-after");
+      });
+
+      row.addEventListener("drop", function (e) {
+        e.preventDefault();
+        var position = row.classList.contains("drag-over-before") ? "before" : "after";
+        row.classList.remove("drag-over-before", "drag-over-after");
+        if (dragState && dragState !== id) reorder(dragState, id, position);
+        dragState = null;
+      });
+
+      row.addEventListener("dragend", function () {
+        row.classList.remove("dragging", "drag-over-before", "drag-over-after");
+        dragState = null;
+      });
+    }
+
+    function escapeAttr(s) {
+      return String(s).replace(/&/g, "&amp;").replace(/"/g, "&quot;");
+    }
+
+    /* ---------- events ---------- */
+
+    els.composer.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var text = els.taskInput.value.trim();
+      if (!text) return;
+      var tags = els.draftTags.value.split(/[,、]/).map(function (s) { return s.trim(); }).filter(Boolean);
+      addTask(text, els.draftDue.value, ui.draftPriority, tags);
+      els.taskInput.value = "";
+      els.draftDue.value = "";
+      els.draftTags.value = "";
+      ui.draftPriority = "mid";
+      renderDraftPriority();
+      els.taskInput.focus();
+    });
+
+    els.searchInput.addEventListener("input", function () {
+      ui.query = els.searchInput.value;
+      els.searchClear.style.display = ui.query ? "flex" : "none";
+      renderTabs();
+      renderBulkBar();
+      renderList();
+    });
+
+    els.searchClear.addEventListener("click", function () {
+      ui.query = "";
+      els.searchInput.value = "";
+      els.searchClear.style.display = "none";
+      renderTabs();
+      renderBulkBar();
+      renderList();
+    });
+
+    els.filterToggle.addEventListener("click", function () {
+      ui.filterOpen = !ui.filterOpen;
+      renderFilterToggle();
+      renderFilterPanel();
+    });
+
+    els.filterDue.addEventListener("change", function () {
+      ui.dueFilter = els.filterDue.value;
+      render();
+    });
+
+    els.filterClear.addEventListener("click", function () {
+      ui.tagFilter.clear();
+      ui.priorityFilter.clear();
+      ui.dueFilter = "all";
+      render();
+    });
+
+    els.bulkComplete.addEventListener("click", function () {
+      visibleTasks().forEach(function (t) { t.status = "done"; });
+      save();
+      render();
+    });
+
+    els.bulkDelete.addEventListener("click", function () {
+      var ids = new Set(visibleTasks().filter(function (t) { return t.status === "done"; }).map(function (t) { return t.id; }));
+      tasks = tasks.filter(function (t) { return !ids.has(t.id); });
+      save();
+      render();
+    });
+
+    render();
+  })();
+</script>
