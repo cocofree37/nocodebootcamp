@@ -126,11 +126,12 @@
     padding: 32px 16px 80px;
   }
 
-  .sheet { width: 100%; max-width: 660px; }
+  .sheet { width: 100%; max-width: 780px; }
 
   header {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
     gap: 12px;
     margin-bottom: 20px;
   }
@@ -155,6 +156,31 @@
     margin: 0;
     letter-spacing: 0.03em;
   }
+
+  .theme-switch {
+    display: flex;
+    gap: 2px;
+    background: var(--surface-hover);
+    border-radius: 100px;
+    padding: 3px;
+    margin-left: auto;
+  }
+  .theme-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: transparent;
+    color: var(--text-faint);
+    border-radius: 100px;
+    cursor: pointer;
+  }
+  .theme-btn .material-symbols-outlined { font-size: 19px; }
+  .theme-btn:hover { color: var(--text); }
+  .theme-btn[aria-pressed="true"] { background: var(--surface); color: var(--blue); box-shadow: var(--shadow-1); }
+  .theme-btn:focus-visible { outline: 2px solid var(--blue); outline-offset: 1px; }
 
   /* ---------- composer ---------- */
 
@@ -388,6 +414,36 @@
   }
   .filter-clear:hover { text-decoration: underline; }
 
+  /* ---------- view switch ---------- */
+
+  .view-switch {
+    display: flex;
+    gap: 4px;
+    background: var(--surface-hover);
+    border-radius: 10px;
+    padding: 4px;
+    margin-bottom: 16px;
+    width: fit-content;
+  }
+  .view-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    background: transparent;
+    border: none;
+    border-radius: 7px;
+    padding: 7px 14px;
+    cursor: pointer;
+  }
+  .view-btn .material-symbols-outlined { font-size: 18px; }
+  .view-btn:hover { color: var(--text); }
+  .view-btn[aria-pressed="true"] { background: var(--surface); color: var(--blue); box-shadow: var(--shadow-1); }
+  .view-btn:focus-visible { outline: 2px solid var(--blue); outline-offset: 1px; }
+
   /* ---------- tabs ---------- */
 
   .tabs {
@@ -460,9 +516,9 @@
     box-shadow: var(--shadow-1);
     transition: border-color 0.1s ease;
   }
-  .row.drag-over-before { border-top: 2px solid var(--blue); }
-  .row.drag-over-after { border-bottom: 2px solid var(--blue); }
-  .row.dragging { opacity: 0.5; }
+  .row.drag-over-before, .board-card.drag-over-before { border-top: 2px solid var(--blue); }
+  .row.drag-over-after, .board-card.drag-over-after { border-bottom: 2px solid var(--blue); }
+  .row.dragging, .board-card.dragging { opacity: 0.5; }
 
   .row-main {
     display: flex;
@@ -471,7 +527,7 @@
     padding: 10px 10px 10px 4px;
   }
 
-  .drag-handle {
+  .drag-handle, .card-handle {
     color: var(--text-faint);
     cursor: grab;
     display: flex;
@@ -480,8 +536,8 @@
     flex-shrink: 0;
     opacity: 0.35;
   }
-  .row:hover .drag-handle { opacity: 1; }
-  .drag-handle:active { cursor: grabbing; }
+  .row:hover .drag-handle, .board-card:hover .card-handle { opacity: 1; }
+  .drag-handle:active, .card-handle:active { cursor: grabbing; }
 
   .status-btn {
     flex-shrink: 0;
@@ -499,7 +555,7 @@
   .status-btn[data-status="inprogress"] { color: var(--amber-fill); }
   .status-btn[data-status="done"] { color: var(--green-fill); }
 
-  .row-body { flex: 1; min-width: 0; padding: 6px 0; }
+  .row-body, .card-text-wrap { flex: 1; min-width: 0; padding: 6px 0; }
 
   .row-text {
     font-size: 14.5px;
@@ -507,7 +563,7 @@
     word-break: break-word;
     cursor: text;
   }
-  .row[data-status="done"] .row-text { color: var(--text-faint); text-decoration: line-through; }
+  .row[data-status="done"] .row-text, .board-card[data-status="done"] .row-text { color: var(--text-faint); text-decoration: line-through; }
 
   .row-text-input {
     width: 100%;
@@ -529,29 +585,18 @@
     margin-top: 6px;
   }
 
-  .meta-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 11.5px;
-    color: var(--text-secondary);
-    background: var(--surface-hover);
-    border-radius: 100px;
-    padding: 3px 9px;
-  }
-  .meta-chip .material-symbols-outlined { font-size: 14px; }
-
   .due-field {
     display: inline-flex;
     align-items: center;
-    gap: 4px;
+    gap: 3px;
     font-size: 11.5px;
     color: var(--text-secondary);
     background: var(--surface-hover);
     border-radius: 100px;
     padding: 2px 9px 2px 9px;
   }
-  .due-field .material-symbols-outlined { font-size: 14px; color: var(--text-faint); }
+  .due-field .material-symbols-outlined { font-size: 14px; color: var(--text-faint); flex-shrink: 0; }
+  .due-field .date-arrow { font-size: 11px; color: var(--text-faint); flex-shrink: 0; }
   .due-field input[type="date"] {
     font: inherit;
     font-family: var(--font-mono);
@@ -559,15 +604,17 @@
     color: var(--text-secondary);
     background: transparent;
     border: none;
-    width: 92px;
+    width: 86px;
   }
   .due-field input[type="date"]:focus-visible { outline: 1px solid var(--blue); border-radius: 4px; }
   .due-field[data-due="overdue"] { background: var(--red-soft-strong); color: var(--red); }
   .due-field[data-due="overdue"] input,
-  .due-field[data-due="overdue"] .material-symbols-outlined { color: var(--red); }
+  .due-field[data-due="overdue"] .material-symbols-outlined,
+  .due-field[data-due="overdue"] .date-arrow { color: var(--red); }
   .due-field[data-due="today"] { background: var(--amber-soft); color: var(--amber); }
   .due-field[data-due="today"] input,
-  .due-field[data-due="today"] .material-symbols-outlined { color: var(--amber); }
+  .due-field[data-due="today"] .material-symbols-outlined,
+  .due-field[data-due="today"] .date-arrow { color: var(--amber); }
 
   .tag-chip {
     display: inline-flex;
@@ -590,10 +637,7 @@
   }
   .tag-chip button:hover { opacity: 1; }
 
-  .tag-add {
-    display: inline-flex;
-    align-items: center;
-  }
+  .tag-add { display: inline-flex; align-items: center; }
   .tag-add input {
     font: inherit;
     font-size: 11.5px;
@@ -623,7 +667,7 @@
   .subtask-toggle:hover { background: var(--border); }
   .subtask-toggle .material-symbols-outlined { font-size: 14px; }
 
-  .row-actions { display: flex; align-items: flex-start; gap: 0; flex-shrink: 0; }
+  .row-actions, .card-actions { display: flex; align-items: flex-start; gap: 0; flex-shrink: 0; }
   .icon-btn {
     border: none;
     background: transparent;
@@ -635,7 +679,8 @@
     border-radius: 100px;
     opacity: 0;
   }
-  .row:hover .icon-btn, .row:focus-within .icon-btn { opacity: 1; }
+  .row:hover .icon-btn, .row:focus-within .icon-btn,
+  .board-card:hover .icon-btn, .board-card:focus-within .icon-btn { opacity: 1; }
   .icon-btn:hover { background: var(--surface-hover); color: var(--text); }
   .icon-btn:focus-visible { outline: 2px solid var(--blue); outline-offset: 1px; opacity: 1; }
   .icon-btn.delete:hover { color: var(--red); background: var(--red-soft); }
@@ -693,9 +738,133 @@
     border-radius: 12px;
   }
 
+  /* ---------- board (kanban) ---------- */
+
+  .board { display: flex; gap: 12px; align-items: flex-start; overflow-x: auto; padding-bottom: 8px; }
+  .board-col { flex: 1 1 0; min-width: 250px; background: var(--surface-hover); border-radius: 12px; padding: 10px; }
+  .board-col-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 6px 10px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+  }
+  .board-col-header .count {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-faint);
+    background: var(--surface);
+    border-radius: 100px;
+    padding: 1px 7px;
+  }
+  .board-col-body {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-height: 48px;
+    border-radius: 8px;
+    padding: 2px;
+    transition: background 0.1s ease;
+  }
+  .board-col-body.drag-over-col { background: var(--blue-soft-strong); }
+  .board-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 8px 8px 8px 4px;
+    box-shadow: var(--shadow-1);
+  }
+  .card-top { display: flex; align-items: flex-start; gap: 2px; }
+  .board-empty {
+    font-size: 12px;
+    color: var(--text-faint);
+    text-align: center;
+    padding: 16px 6px;
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+  }
+
+  /* ---------- gantt ---------- */
+
+  .gantt-note { font-size: 12px; color: var(--text-faint); margin: -6px 0 12px; }
+  .gantt-scroll {
+    overflow-x: auto;
+    overflow-y: hidden;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--surface);
+    max-width: 100%;
+  }
+  .gantt-table { position: relative; }
+  .gantt-header-row, .gantt-row { display: flex; }
+  .gantt-header-row { height: 36px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--surface); z-index: 2; }
+  .gantt-row { height: 40px; border-bottom: 1px solid var(--border); }
+  .gantt-row:last-child { border-bottom: none; }
+  .gantt-name-cell {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    width: 160px;
+    flex-shrink: 0;
+    height: 100%;
+    background: var(--surface);
+    padding: 0 10px;
+    font-size: 12.5px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border-right: 1px solid var(--border);
+  }
+  .gantt-header-row .gantt-name-cell { font-weight: 500; color: var(--text-secondary); z-index: 3; }
+  .gantt-name-cell .material-symbols-outlined { font-size: 16px; flex-shrink: 0; }
+  .gantt-name-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .gantt-row[data-status="done"] .gantt-name-text { color: var(--text-faint); text-decoration: line-through; }
+  .gantt-days-header { display: flex; }
+  .gantt-day-cell {
+    flex-shrink: 0;
+    width: 32px;
+    height: 100%;
+    font-size: 10px;
+    font-family: var(--font-mono);
+    color: var(--text-faint);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-right: 1px solid var(--border);
+  }
+  .gantt-day-cell.weekend { background: var(--surface-hover); }
+  .gantt-day-cell.today { color: var(--blue); font-weight: 700; }
+  .gantt-track { position: relative; flex-shrink: 0; height: 100%; }
+  .gantt-track-bg {
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(to right, transparent, transparent 31px, var(--border) 31px, var(--border) 32px);
+    opacity: 0.6;
+  }
+  .gantt-body { position: relative; }
+  .gantt-bar {
+    position: absolute;
+    top: 6px;
+    height: 28px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+    overflow: hidden;
+  }
+  .gantt-bar-label { font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .gantt-bar[data-status="notstarted"] { background: var(--surface-hover); border: 1px solid var(--border-strong); color: var(--text-secondary); }
+  .gantt-bar[data-status="inprogress"] { background: var(--amber-soft); border: 1px solid var(--amber-fill); color: var(--amber); }
+  .gantt-bar[data-status="done"] { background: var(--green-soft); border: 1px solid var(--green-fill); color: var(--green); opacity: 0.8; }
+  .gantt-bar[data-priority="high"] { border-left: 3px solid var(--red); }
+  .gantt-today-line { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--blue); z-index: 1; }
+
   @media (max-width: 480px) {
     .detail-field input[type="text"] { width: 120px; }
     .filter-group .filter-label { width: 100%; }
+    .board-col { min-width: 220px; }
   }
 </style>
 
@@ -703,6 +872,17 @@
   <header>
     <div class="app-icon"><span class="material-symbols-outlined">checklist</span></div>
     <h1>ToDo管理</h1>
+    <div class="theme-switch" id="theme-switch" role="radiogroup" aria-label="テーマ">
+      <button type="button" class="theme-btn" data-theme-value="system" title="端末の設定に合わせる">
+        <span class="material-symbols-outlined">brightness_auto</span>
+      </button>
+      <button type="button" class="theme-btn" data-theme-value="light" title="ライト(白)">
+        <span class="material-symbols-outlined">light_mode</span>
+      </button>
+      <button type="button" class="theme-btn" data-theme-value="dark" title="ダーク(黒)">
+        <span class="material-symbols-outlined">dark_mode</span>
+      </button>
+    </div>
   </header>
 
   <form class="composer" id="composer">
@@ -712,6 +892,11 @@
       <button type="submit" class="add-btn">追加</button>
     </div>
     <div class="composer-detail">
+      <label class="detail-field">
+        <span class="material-symbols-outlined">event_upcoming</span>
+        <span class="detail-label">開始</span>
+        <input type="date" id="draft-start" />
+      </label>
       <label class="detail-field">
         <span class="material-symbols-outlined">calendar_today</span>
         <span class="detail-label">期限</span>
@@ -766,9 +951,21 @@
     <button type="button" class="filter-clear" id="filter-clear">フィルタをクリア</button>
   </div>
 
+  <div class="view-switch" id="view-switch" role="radiogroup" aria-label="表示切替">
+    <button type="button" class="view-btn" data-view-value="list" aria-pressed="true">
+      <span class="material-symbols-outlined">view_list</span>リスト
+    </button>
+    <button type="button" class="view-btn" data-view-value="board" aria-pressed="false">
+      <span class="material-symbols-outlined">view_kanban</span>ボード
+    </button>
+    <button type="button" class="view-btn" data-view-value="gantt" aria-pressed="false">
+      <span class="material-symbols-outlined">view_timeline</span>ガント
+    </button>
+  </div>
+
   <div class="tabs" role="tablist" id="tabs"></div>
 
-  <div class="bulk-bar">
+  <div class="bulk-bar" id="bulk-bar">
     <button type="button" class="text-btn" id="bulk-complete">
       <span class="material-symbols-outlined">done_all</span>すべて完了にする
     </button>
@@ -778,6 +975,13 @@
   </div>
 
   <ul class="list" id="list"></ul>
+
+  <div class="board" id="board" style="display:none"></div>
+
+  <div id="gantt-container" style="display:none">
+    <p class="gantt-note" id="gantt-note"></p>
+    <div class="gantt-scroll"><div id="gantt-table"></div></div>
+  </div>
 </div>
 
 <script>
@@ -785,6 +989,9 @@
     "use strict";
 
     var STORAGE_KEY = "task-ledger.tasks.v1";
+    var THEME_KEY = "task-ledger.theme.v1";
+    var VIEW_KEY = "task-ledger.view.v1";
+
     var STATUSES = [
       { key: "notstarted", label: "未着手", icon: "radio_button_unchecked" },
       { key: "inprogress", label: "着手中", icon: "adjust" },
@@ -800,7 +1007,13 @@
     var PRIORITY_CYCLE = { high: "mid", mid: "low", low: "high" };
     var PRIORITY_ICON = { high: "flag", mid: "flag", low: "outlined_flag" };
 
+    var GANTT_DAY_W = 32;
+    var GANTT_NAME_W = 160;
+    var GANTT_MAX_DAYS = 180;
+
     var ui = {
+      theme: loadTheme(),
+      view: loadView(),
       tab: "all",
       query: "",
       tagFilter: new Set(),
@@ -811,12 +1024,14 @@
       editingId: null,
       draftPriority: "mid"
     };
+    applyTheme();
 
     var tasks = load();
 
     var els = {
       composer: document.getElementById("composer"),
       taskInput: document.getElementById("task-input"),
+      draftStart: document.getElementById("draft-start"),
       draftDue: document.getElementById("draft-due"),
       draftPriority: document.getElementById("draft-priority"),
       draftTags: document.getElementById("draft-tags"),
@@ -830,15 +1045,43 @@
       filterPriority: document.getElementById("filter-priority"),
       filterDue: document.getElementById("filter-due"),
       filterClear: document.getElementById("filter-clear"),
+      themeSwitch: document.getElementById("theme-switch"),
+      viewSwitch: document.getElementById("view-switch"),
       tabs: document.getElementById("tabs"),
+      bulkBar: document.getElementById("bulk-bar"),
       bulkComplete: document.getElementById("bulk-complete"),
       bulkDelete: document.getElementById("bulk-delete"),
-      list: document.getElementById("list")
+      list: document.getElementById("list"),
+      board: document.getElementById("board"),
+      ganttContainer: document.getElementById("gantt-container"),
+      ganttNote: document.getElementById("gantt-note"),
+      ganttTable: document.getElementById("gantt-table")
     };
 
     var dragState = null;
 
-    /* ---------- persistence ---------- */
+    /* ---------- theme & view persistence ---------- */
+
+    function loadTheme() {
+      var v;
+      try { v = localStorage.getItem(THEME_KEY); } catch (e) { v = null; }
+      return (v === "light" || v === "dark") ? v : "system";
+    }
+    function saveTheme(v) { try { localStorage.setItem(THEME_KEY, v); } catch (e) {} }
+    function applyTheme() {
+      if (ui.theme === "light") document.documentElement.setAttribute("data-theme", "light");
+      else if (ui.theme === "dark") document.documentElement.setAttribute("data-theme", "dark");
+      else document.documentElement.removeAttribute("data-theme");
+    }
+
+    function loadView() {
+      var v;
+      try { v = localStorage.getItem(VIEW_KEY); } catch (e) { v = null; }
+      return (v === "board" || v === "gantt") ? v : "list";
+    }
+    function saveView(v) { try { localStorage.setItem(VIEW_KEY, v); } catch (e) {} }
+
+    /* ---------- task persistence ---------- */
 
     function load() {
       var raw;
@@ -855,6 +1098,7 @@
         text: typeof t.text === "string" ? t.text : "",
         status: STATUSES.some(function (s) { return s.key === t.status; }) ? t.status : "notstarted",
         priority: PRIORITIES.some(function (p) { return p.key === t.priority; }) ? t.priority : "mid",
+        startDate: t.startDate || "",
         dueDate: t.dueDate || "",
         tags: Array.isArray(t.tags) ? t.tags.filter(Boolean) : [],
         subtasks: Array.isArray(t.subtasks) ? t.subtasks.map(function (s) {
@@ -878,14 +1122,23 @@
       return d.getFullYear() + "-" + m + "-" + day;
     }
 
+    function parseISODate(s) {
+      var p = s.split("-").map(Number);
+      return new Date(p[0], p[1] - 1, p[2]);
+    }
+    function addDays(d, n) { var r = new Date(d); r.setDate(r.getDate() + n); return r; }
+    function dayDiff(a, b) { return Math.round((b - a) / 86400000); }
+    function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
     /* ---------- mutations ---------- */
 
-    function addTask(text, dueDate, priority, tags) {
+    function addTask(text, startDate, dueDate, priority, tags) {
       tasks.unshift({
         id: makeId(),
         text: text,
         status: "notstarted",
         priority: priority || "mid",
+        startDate: startDate || "",
         dueDate: dueDate || "",
         tags: tags || [],
         subtasks: []
@@ -908,6 +1161,14 @@
       var t = findTask(id);
       if (!t) return;
       t.priority = PRIORITY_CYCLE[t.priority];
+      save();
+      render();
+    }
+
+    function setStartDate(id, value) {
+      var t = findTask(id);
+      if (!t) return;
+      t.startDate = value || "";
       save();
       render();
     }
@@ -981,14 +1242,25 @@
       render();
     }
 
-    function reorder(draggedId, targetId, position) {
+    function reorder(draggedId, targetId, position, newStatus) {
       var fromIdx = tasks.findIndex(function (t) { return t.id === draggedId; });
       if (fromIdx < 0) return;
       var moved = tasks.splice(fromIdx, 1)[0];
+      if (newStatus) moved.status = newStatus;
       var toIdx = tasks.findIndex(function (t) { return t.id === targetId; });
       if (toIdx < 0) toIdx = tasks.length;
       if (position === "after") toIdx += 1;
       tasks.splice(toIdx, 0, moved);
+      save();
+      render();
+    }
+
+    function moveToColumnEnd(draggedId, status) {
+      var fromIdx = tasks.findIndex(function (t) { return t.id === draggedId; });
+      if (fromIdx < 0) return;
+      var moved = tasks.splice(fromIdx, 1)[0];
+      moved.status = status;
+      tasks.push(moved);
       save();
       render();
     }
@@ -1027,6 +1299,10 @@
       });
     }
 
+    function visibleTasksIgnoringTab() {
+      return tasks.filter(matchesFiltersExceptTab);
+    }
+
     function activeFilterCount() {
       return ui.tagFilter.size + ui.priorityFilter.size + (ui.dueFilter !== "all" ? 1 : 0);
     }
@@ -1046,9 +1322,25 @@
       renderDraftPriority();
       renderFilterToggle();
       renderFilterPanel();
-      renderTabs();
-      renderBulkBar();
-      renderList();
+      renderThemeSwitch();
+      renderViewSwitch();
+
+      var isList = ui.view === "list";
+      els.tabs.style.display = isList ? "" : "none";
+      els.bulkBar.style.display = isList ? "" : "none";
+      els.list.style.display = isList ? "" : "none";
+      els.board.style.display = ui.view === "board" ? "" : "none";
+      els.ganttContainer.style.display = ui.view === "gantt" ? "" : "none";
+
+      if (isList) {
+        renderTabs();
+        renderBulkBar();
+        renderList();
+      } else if (ui.view === "board") {
+        renderBoard();
+      } else {
+        renderGantt();
+      }
     }
 
     function renderTagList() {
@@ -1130,6 +1422,20 @@
       els.filterDue.value = ui.dueFilter;
     }
 
+    function renderThemeSwitch() {
+      var btns = els.themeSwitch.querySelectorAll(".theme-btn");
+      btns.forEach(function (btn) {
+        btn.setAttribute("aria-pressed", String(btn.dataset.themeValue === ui.theme));
+      });
+    }
+
+    function renderViewSwitch() {
+      var btns = els.viewSwitch.querySelectorAll(".view-btn");
+      btns.forEach(function (btn) {
+        btn.setAttribute("aria-pressed", String(btn.dataset.viewValue === ui.view));
+      });
+    }
+
     function renderTabs() {
       els.tabs.innerHTML = "";
       TABS.forEach(function (tab) {
@@ -1173,70 +1479,40 @@
       visible.forEach(function (t) { els.list.appendChild(renderRow(t)); });
     }
 
-    function renderRow(t) {
-      var li = document.createElement("li");
-      li.className = "row";
-      li.setAttribute("data-status", t.status);
-      li.draggable = true;
-      li.dataset.id = t.id;
+    function buildDateField(t) {
+      var due = dueState(t);
+      var field = document.createElement("span");
+      field.className = "due-field";
+      if (due) field.setAttribute("data-due", due);
+      field.innerHTML = '<span class="material-symbols-outlined">calendar_today</span>';
 
-      var main = document.createElement("div");
-      main.className = "row-main";
+      var startInput = document.createElement("input");
+      startInput.type = "date";
+      startInput.title = "開始日";
+      startInput.value = t.startDate || "";
+      startInput.addEventListener("change", function () { setStartDate(t.id, startInput.value); });
+      field.appendChild(startInput);
 
-      var handle = document.createElement("span");
-      handle.className = "material-symbols-outlined drag-handle";
-      handle.textContent = "drag_indicator";
-      main.appendChild(handle);
+      var arrow = document.createElement("span");
+      arrow.className = "date-arrow";
+      arrow.textContent = "→";
+      field.appendChild(arrow);
 
-      var statusInfo = STATUSES.find(function (s) { return s.key === t.status; });
-      var statusBtn = document.createElement("button");
-      statusBtn.type = "button";
-      statusBtn.className = "status-btn";
-      statusBtn.dataset.status = t.status;
-      statusBtn.title = "クリックで次のステータスへ (" + statusInfo.label + ")";
-      statusBtn.innerHTML = '<span class="material-symbols-outlined' + (t.status === "done" ? " filled" : "") + '">' + statusInfo.icon + "</span>";
-      statusBtn.addEventListener("click", function () { cycleStatus(t.id); });
-      main.appendChild(statusBtn);
+      var dueInput = document.createElement("input");
+      dueInput.type = "date";
+      dueInput.title = "期限";
+      dueInput.value = t.dueDate || "";
+      dueInput.addEventListener("change", function () { setDueDate(t.id, dueInput.value); });
+      field.appendChild(dueInput);
 
-      var body = document.createElement("div");
-      body.className = "row-body";
+      return field;
+    }
 
-      if (ui.editingId === t.id) {
-        var input = document.createElement("input");
-        input.type = "text";
-        input.className = "row-text-input";
-        input.value = t.text;
-        input.maxLength = 200;
-        input.addEventListener("keydown", function (e) {
-          if (e.key === "Enter") { e.preventDefault(); setText(t.id, input.value); }
-          if (e.key === "Escape") { e.preventDefault(); ui.editingId = null; render(); }
-        });
-        input.addEventListener("blur", function () { setText(t.id, input.value); });
-        body.appendChild(input);
-        setTimeout(function () { input.focus(); input.select(); }, 0);
-      } else {
-        var textEl = document.createElement("span");
-        textEl.className = "row-text";
-        textEl.textContent = t.text;
-        textEl.title = "ダブルクリックで編集";
-        textEl.addEventListener("dblclick", function () { ui.editingId = t.id; render(); });
-        body.appendChild(textEl);
-      }
-
+    function buildMeta(t) {
       var meta = document.createElement("div");
       meta.className = "meta-line";
 
-      var due = dueState(t);
-      var dueField = document.createElement("label");
-      dueField.className = "due-field";
-      if (due) dueField.setAttribute("data-due", due);
-      dueField.innerHTML = '<span class="material-symbols-outlined">calendar_today</span>';
-      var dueInput = document.createElement("input");
-      dueInput.type = "date";
-      dueInput.value = t.dueDate || "";
-      dueInput.addEventListener("change", function () { setDueDate(t.id, dueInput.value); });
-      dueField.appendChild(dueInput);
-      meta.appendChild(dueField);
+      meta.appendChild(buildDateField(t));
 
       t.tags.forEach(function (tag) {
         var chip = document.createElement("span");
@@ -1280,9 +1556,49 @@
       });
       meta.appendChild(subToggle);
 
-      body.appendChild(meta);
-      main.appendChild(body);
+      return meta;
+    }
 
+    function buildStatusBtn(t) {
+      var statusInfo = STATUSES.find(function (s) { return s.key === t.status; });
+      var statusBtn = document.createElement("button");
+      statusBtn.type = "button";
+      statusBtn.className = "status-btn";
+      statusBtn.dataset.status = t.status;
+      statusBtn.title = "クリックで次のステータスへ (" + statusInfo.label + ")";
+      statusBtn.innerHTML = '<span class="material-symbols-outlined' + (t.status === "done" ? " filled" : "") + '">' + statusInfo.icon + "</span>";
+      statusBtn.addEventListener("click", function () { cycleStatus(t.id); });
+      return statusBtn;
+    }
+
+    function buildTextEl(t) {
+      var wrap = document.createElement("div");
+      wrap.className = "card-text-wrap";
+      if (ui.editingId === t.id) {
+        var input = document.createElement("input");
+        input.type = "text";
+        input.className = "row-text-input";
+        input.value = t.text;
+        input.maxLength = 200;
+        input.addEventListener("keydown", function (e) {
+          if (e.key === "Enter") { e.preventDefault(); setText(t.id, input.value); }
+          if (e.key === "Escape") { e.preventDefault(); ui.editingId = null; render(); }
+        });
+        input.addEventListener("blur", function () { setText(t.id, input.value); });
+        wrap.appendChild(input);
+        setTimeout(function () { input.focus(); input.select(); }, 0);
+      } else {
+        var textEl = document.createElement("span");
+        textEl.className = "row-text";
+        textEl.textContent = t.text;
+        textEl.title = "ダブルクリックで編集";
+        textEl.addEventListener("dblclick", function () { ui.editingId = t.id; render(); });
+        wrap.appendChild(textEl);
+      }
+      return wrap;
+    }
+
+    function buildActions(t) {
       var actions = document.createElement("div");
       actions.className = "row-actions";
 
@@ -1311,7 +1627,33 @@
       delBtn.addEventListener("click", function () { removeTask(t.id); });
       actions.appendChild(delBtn);
 
-      main.appendChild(actions);
+      return actions;
+    }
+
+    function renderRow(t) {
+      var li = document.createElement("li");
+      li.className = "row";
+      li.setAttribute("data-status", t.status);
+      li.draggable = true;
+      li.dataset.id = t.id;
+
+      var main = document.createElement("div");
+      main.className = "row-main";
+
+      var handle = document.createElement("span");
+      handle.className = "material-symbols-outlined drag-handle";
+      handle.textContent = "drag_indicator";
+      main.appendChild(handle);
+
+      main.appendChild(buildStatusBtn(t));
+
+      var body = document.createElement("div");
+      body.className = "row-body";
+      body.appendChild(buildTextEl(t));
+      body.appendChild(buildMeta(t));
+      main.appendChild(body);
+
+      main.appendChild(buildActions(t));
       li.appendChild(main);
 
       if (ui.expanded.has(t.id)) {
@@ -1321,6 +1663,197 @@
       attachDrag(li, t.id);
 
       return li;
+    }
+
+    function renderCard(t) {
+      var card = document.createElement("div");
+      card.className = "board-card";
+      card.setAttribute("data-status", t.status);
+      card.draggable = true;
+      card.dataset.id = t.id;
+
+      var top = document.createElement("div");
+      top.className = "card-top";
+
+      var handle = document.createElement("span");
+      handle.className = "material-symbols-outlined card-handle";
+      handle.textContent = "drag_indicator";
+      top.appendChild(handle);
+
+      top.appendChild(buildStatusBtn(t));
+
+      var textWrap = buildTextEl(t);
+      textWrap.appendChild(buildMeta(t));
+      top.appendChild(textWrap);
+
+      var actions = buildActions(t);
+      actions.className = "card-actions";
+      top.appendChild(actions);
+
+      card.appendChild(top);
+
+      if (ui.expanded.has(t.id)) {
+        card.appendChild(renderSubtaskPanel(t));
+      }
+
+      attachCardDrag(card, t.id);
+
+      return card;
+    }
+
+    function renderBoard() {
+      els.board.innerHTML = "";
+      var visible = visibleTasksIgnoringTab();
+
+      STATUSES.forEach(function (s) {
+        var colTasks = visible.filter(function (t) { return t.status === s.key; });
+
+        var col = document.createElement("div");
+        col.className = "board-col";
+
+        var header = document.createElement("div");
+        header.className = "board-col-header";
+        var iconColor = s.key === "inprogress" ? "var(--amber-fill)" : s.key === "done" ? "var(--green-fill)" : "var(--text-faint)";
+        header.innerHTML = '<span class="material-symbols-outlined' + (s.key === "done" ? " filled" : "") + '" style="font-size:16px;color:' + iconColor + '">' + s.icon + "</span>" +
+          "<span>" + s.label + "</span><span class=\"count\">" + colTasks.length + "</span>";
+        col.appendChild(header);
+
+        var body = document.createElement("div");
+        body.className = "board-col-body";
+        body.dataset.status = s.key;
+
+        if (colTasks.length === 0) {
+          var empty = document.createElement("div");
+          empty.className = "board-empty";
+          empty.textContent = "ここにドラッグ、または入力欄から追加";
+          body.appendChild(empty);
+        } else {
+          colTasks.forEach(function (t) { body.appendChild(renderCard(t)); });
+        }
+
+        attachColumnDrop(body, s.key);
+        col.appendChild(body);
+        els.board.appendChild(col);
+      });
+    }
+
+    function renderGantt() {
+      var all = visibleTasksIgnoringTab();
+      var ganttTasks = all.filter(function (t) { return !!t.dueDate; });
+      var skipped = all.length - ganttTasks.length;
+
+      var note = skipped > 0 ? ("期限が未設定のタスクが" + skipped + "件あります(ガントチャートには表示されません)") : "";
+
+      if (ganttTasks.length === 0) {
+        els.ganttNote.textContent = note;
+        els.ganttTable.innerHTML = '<div class="empty" style="border:none;">期限が設定されたタスクがありません。</div>';
+        return;
+      }
+
+      ganttTasks = ganttTasks.slice().sort(function (a, b) {
+        var as = a.startDate || a.dueDate, bs = b.startDate || b.dueDate;
+        return as < bs ? -1 : as > bs ? 1 : 0;
+      });
+
+      var todayD = parseISODate(todayISO());
+      var minD = todayD, maxD = todayD;
+      ganttTasks.forEach(function (t) {
+        var s = parseISODate(t.startDate || t.dueDate);
+        var e = parseISODate(t.dueDate);
+        if (s < minD) minD = s;
+        if (e > maxD) maxD = e;
+      });
+      minD = addDays(minD, -1);
+      maxD = addDays(maxD, 1);
+
+      var totalDays = dayDiff(minD, maxD) + 1;
+      var truncated = false;
+      if (totalDays > GANTT_MAX_DAYS) {
+        maxD = addDays(minD, GANTT_MAX_DAYS - 1);
+        totalDays = GANTT_MAX_DAYS;
+        truncated = true;
+      }
+
+      els.ganttNote.textContent = note + (truncated ? (note ? " / " : "") + "表示期間が長いため直近" + GANTT_MAX_DAYS + "日分のみ表示しています。" : "");
+
+      var todayIdx = dayDiff(minD, todayD);
+
+      var table = document.createElement("div");
+      table.className = "gantt-table";
+      table.style.width = (GANTT_NAME_W + totalDays * GANTT_DAY_W) + "px";
+
+      var header = document.createElement("div");
+      header.className = "gantt-header-row";
+      var headerName = document.createElement("div");
+      headerName.className = "gantt-name-cell";
+      headerName.textContent = "タスク";
+      header.appendChild(headerName);
+      var headerDays = document.createElement("div");
+      headerDays.className = "gantt-days-header";
+      for (var i = 0; i < totalDays; i++) {
+        var d = addDays(minD, i);
+        var cell = document.createElement("div");
+        cell.className = "gantt-day-cell";
+        if (d.getDay() === 0 || d.getDay() === 6) cell.classList.add("weekend");
+        if (i === todayIdx) cell.classList.add("today");
+        cell.textContent = (d.getMonth() + 1) + "/" + d.getDate();
+        headerDays.appendChild(cell);
+      }
+      header.appendChild(headerDays);
+      table.appendChild(header);
+
+      var body = document.createElement("div");
+      body.className = "gantt-body";
+
+      ganttTasks.forEach(function (t) {
+        var row = document.createElement("div");
+        row.className = "gantt-row";
+        row.setAttribute("data-status", t.status);
+
+        var statusInfo = STATUSES.find(function (s) { return s.key === t.status; });
+        var nameCell = document.createElement("div");
+        nameCell.className = "gantt-name-cell";
+        var iconColor = t.status === "inprogress" ? "var(--amber-fill)" : t.status === "done" ? "var(--green-fill)" : "var(--text-faint)";
+        nameCell.innerHTML = '<span class="material-symbols-outlined' + (t.status === "done" ? " filled" : "") + '" style="color:' + iconColor + '">' + statusInfo.icon + '</span>' +
+          '<span class="gantt-name-text">' + escapeHtml(t.text) + "</span>";
+        row.appendChild(nameCell);
+
+        var track = document.createElement("div");
+        track.className = "gantt-track";
+        track.style.width = (totalDays * GANTT_DAY_W) + "px";
+        var bg = document.createElement("div");
+        bg.className = "gantt-track-bg";
+        track.appendChild(bg);
+
+        var sIdx = clamp(dayDiff(minD, parseISODate(t.startDate || t.dueDate)), 0, totalDays - 1);
+        var eIdx = clamp(dayDiff(minD, parseISODate(t.dueDate)), sIdx, totalDays - 1);
+        var bar = document.createElement("div");
+        bar.className = "gantt-bar";
+        bar.setAttribute("data-status", t.status);
+        if (t.priority === "high") bar.setAttribute("data-priority", "high");
+        bar.style.left = (sIdx * GANTT_DAY_W) + "px";
+        bar.style.width = Math.max(GANTT_DAY_W - 4, (eIdx - sIdx + 1) * GANTT_DAY_W - 4) + "px";
+        bar.title = t.text + "(" + (t.startDate || t.dueDate) + " 〜 " + t.dueDate + ")";
+        var barLabel = document.createElement("span");
+        barLabel.className = "gantt-bar-label";
+        barLabel.textContent = t.text;
+        bar.appendChild(barLabel);
+        track.appendChild(bar);
+
+        row.appendChild(track);
+        body.appendChild(row);
+      });
+
+      if (todayIdx >= 0 && todayIdx < totalDays) {
+        var line = document.createElement("div");
+        line.className = "gantt-today-line";
+        line.style.left = (GANTT_NAME_W + todayIdx * GANTT_DAY_W) + "px";
+        body.appendChild(line);
+      }
+
+      table.appendChild(body);
+      els.ganttTable.innerHTML = "";
+      els.ganttTable.appendChild(table);
     }
 
     function renderSubtaskPanel(t) {
@@ -1375,7 +1908,7 @@
       return panel;
     }
 
-    /* ---------- drag & drop ---------- */
+    /* ---------- drag & drop: list ---------- */
 
     function attachDrag(row, id) {
       row.addEventListener("dragstart", function (e) {
@@ -1413,8 +1946,71 @@
       });
     }
 
+    /* ---------- drag & drop: board ---------- */
+
+    function attachCardDrag(card, id) {
+      card.addEventListener("dragstart", function (e) {
+        if (!e.target.closest(".card-handle")) { e.preventDefault(); return; }
+        dragState = id;
+        card.classList.add("dragging");
+        e.dataTransfer.effectAllowed = "move";
+        try { e.dataTransfer.setData("text/plain", id); } catch (err) {}
+      });
+
+      card.addEventListener("dragover", function (e) {
+        if (!dragState || dragState === id) return;
+        e.preventDefault();
+        e.stopPropagation();
+        var rect = card.getBoundingClientRect();
+        var before = (e.clientY - rect.top) < rect.height / 2;
+        card.classList.toggle("drag-over-before", before);
+        card.classList.toggle("drag-over-after", !before);
+      });
+
+      card.addEventListener("dragleave", function () {
+        card.classList.remove("drag-over-before", "drag-over-after");
+      });
+
+      card.addEventListener("drop", function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var position = card.classList.contains("drag-over-before") ? "before" : "after";
+        card.classList.remove("drag-over-before", "drag-over-after");
+        if (dragState && dragState !== id) {
+          var newStatus = card.closest(".board-col-body").dataset.status;
+          reorder(dragState, id, position, newStatus);
+        }
+        dragState = null;
+      });
+
+      card.addEventListener("dragend", function () {
+        card.classList.remove("dragging", "drag-over-before", "drag-over-after");
+        dragState = null;
+      });
+    }
+
+    function attachColumnDrop(colBody, status) {
+      colBody.addEventListener("dragover", function (e) {
+        if (!dragState) return;
+        e.preventDefault();
+        colBody.classList.add("drag-over-col");
+      });
+      colBody.addEventListener("dragleave", function (e) {
+        if (e.target === colBody) colBody.classList.remove("drag-over-col");
+      });
+      colBody.addEventListener("drop", function (e) {
+        e.preventDefault();
+        colBody.classList.remove("drag-over-col");
+        if (dragState) moveToColumnEnd(dragState, status);
+        dragState = null;
+      });
+    }
+
     function escapeAttr(s) {
       return String(s).replace(/&/g, "&amp;").replace(/"/g, "&quot;");
+    }
+    function escapeHtml(s) {
+      return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
     }
 
     /* ---------- events ---------- */
@@ -1424,8 +2020,9 @@
       var text = els.taskInput.value.trim();
       if (!text) return;
       var tags = els.draftTags.value.split(/[,、]/).map(function (s) { return s.trim(); }).filter(Boolean);
-      addTask(text, els.draftDue.value, ui.draftPriority, tags);
+      addTask(text, els.draftStart.value, els.draftDue.value, ui.draftPriority, tags);
       els.taskInput.value = "";
+      els.draftStart.value = "";
       els.draftDue.value = "";
       els.draftTags.value = "";
       ui.draftPriority = "mid";
@@ -1436,18 +2033,14 @@
     els.searchInput.addEventListener("input", function () {
       ui.query = els.searchInput.value;
       els.searchClear.style.display = ui.query ? "flex" : "none";
-      renderTabs();
-      renderBulkBar();
-      renderList();
+      render();
     });
 
     els.searchClear.addEventListener("click", function () {
       ui.query = "";
       els.searchInput.value = "";
       els.searchClear.style.display = "none";
-      renderTabs();
-      renderBulkBar();
-      renderList();
+      render();
     });
 
     els.filterToggle.addEventListener("click", function () {
@@ -1466,6 +2059,23 @@
       ui.priorityFilter.clear();
       ui.dueFilter = "all";
       render();
+    });
+
+    els.themeSwitch.querySelectorAll(".theme-btn").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        ui.theme = btn.dataset.themeValue;
+        saveTheme(ui.theme);
+        applyTheme();
+        renderThemeSwitch();
+      });
+    });
+
+    els.viewSwitch.querySelectorAll(".view-btn").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        ui.view = btn.dataset.viewValue;
+        saveView(ui.view);
+        render();
+      });
     });
 
     els.bulkComplete.addEventListener("click", function () {
